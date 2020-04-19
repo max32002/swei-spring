@@ -89,6 +89,7 @@ class Spline():
     def trace(self, stroke_dict, bmp_image):
         #print("trace")
         #print(stroke_dict)
+        is_modified = False
 
         glyph_margin={}
 
@@ -136,7 +137,9 @@ class Spline():
         # for debug.
         #print("■"*60)
 
-        self.preprocess(stroke_dict)
+        preprocess_result = self.preprocess(stroke_dict)
+        if preprocess_result:
+            is_modified = True
 
         for key in stroke_dict.keys():
             spline_dict = stroke_dict[key]
@@ -146,18 +149,22 @@ class Spline():
             if True:
                 clockwise = self.check_clockwise(spline_dict)
                 #print("clockwise:", clockwise)
-                self.normalize(stroke_dict, key, bmp_image, y_offset)
-                
+                normalize_result = self.normalize(stroke_dict, key, bmp_image, y_offset)
+                if normalize_result:
+                    is_modified = True
+ 
                 if clockwise:
-                    self.trace_black_block(stroke_dict, key, bmp_image, y_offset)
-                    pass
+                    trace_result = self.trace_black_block(stroke_dict, key, bmp_image, y_offset)
+                    if trace_result:
+                        is_modified = True
                 else:
-                    self.trace_white_block(stroke_dict, key, bmp_image, y_offset)
-                    pass
+                    trace_result = self.trace_white_block(stroke_dict, key, bmp_image, y_offset)
+                    if trace_result:
+                        is_modified = True
 
             stroke_dict[key] = spline_dict
 
-        return stroke_dict
+        return is_modified, stroke_dict
 
     def detect_margin(self, spline_dict):
         default_int = -9999
@@ -249,6 +256,8 @@ class Spline():
         return redo_split
 
     def preprocess(self, stroke_dict):
+        is_modified = False
+
         MAX_SPLIT_CONNT = 100
 
         idx=-1
@@ -257,11 +266,17 @@ class Spline():
         while redo_split:
             idx+=1
             redo_split=self.split_spline(stroke_dict)
+            if redo_split:
+                is_modified = True
             if idx >= MAX_SPLIT_CONNT:
                 redo_split = False
 
+        return is_modified
+
 
     def normalize(self, stroke_dict, key, bmp_image, y_offset):
+        is_modified = False
+
         from . import Rule2_Clean_Noice
         ru2=Rule2_Clean_Noice.Rule()
         ru2.assign_config(self.config)
@@ -314,10 +329,12 @@ class Spline():
             redo_travel,idx=ru3.apply(spline_dict, idx)
         ru3 = None
 
-        return spline_dict
+        return is_modified
 
     # run both in clockwise and counter clockwise.
     def trace_common(self, stroke_dict, key, bmp_image, y_offset, inside_stroke_dict, skip_coordinate):
+        is_modified = False
+
         DEBUG_CRASH_RULE = False
         #DEBUG_CRASH_RULE = True
 
@@ -328,6 +345,14 @@ class Spline():
         from . import Rule102_Col
         ru102=Rule102_Col.Rule()
         ru102.assign_config(self.config)
+
+        from . import Rule103_People
+        ru103=Rule103_People.Rule()
+        ru103.assign_config(self.config)
+
+        from . import Rule104_People_Tail
+        ru104=Rule104_People_Tail.Rule()
+        ru104.assign_config(self.config)
 
         # start process here.
         spline_dict = stroke_dict[key]
@@ -342,6 +367,8 @@ class Spline():
         redo_travel=True    # Enable
         while redo_travel:
             redo_travel,idx, inside_stroke_dict,skip_coordinate=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            if redo_travel:
+                is_modified = True
         ru101 = None
 
         # start to travel nodes for [RULE #102]
@@ -353,12 +380,43 @@ class Spline():
         redo_travel=True    # Enable
         while redo_travel:
             redo_travel,idx, inside_stroke_dict,skip_coordinate=ru102.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            if redo_travel:
+                is_modified = True
         ru102 = None
 
-        return inside_stroke_dict, skip_coordinate
+        # start to travel nodes for [RULE #103]
+        # 「亻」部三角形
+        if DEBUG_CRASH_RULE:
+            print("start Rule # 103...")
+        idx=-1
+        redo_travel=False   # Disable
+        redo_travel=True    # Enable
+        while redo_travel:
+            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru103.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            if redo_travel:
+                is_modified = True
+        ru103 = None
+
+
+        # start to travel nodes for [RULE #104]
+        # 「亻」部三角形
+        if DEBUG_CRASH_RULE:
+            print("start Rule # 104...")
+        idx=-1
+        redo_travel=False   # Disable
+        redo_travel=True    # Enable
+        while redo_travel:
+            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru104.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            if redo_travel:
+                is_modified = True
+        ru104 = None
+
+        return is_modified, inside_stroke_dict, skip_coordinate
 
 
     def trace_white_block(self, stroke_dict, key, bmp_image, y_offset):
+        is_modified = False
+
         spline_dict = stroke_dict[key]
 
         # cache bmp status
@@ -368,9 +426,11 @@ class Spline():
         skip_coordinate = []
 
 
-        return spline_dict
+        return is_modified
 
     def trace_black_block(self, stroke_dict, key, bmp_image, y_offset):
+        is_modified = False
+
         DEBUG_CRASH_RULE = False
         #DEBUG_CRASH_RULE = True
 
@@ -392,6 +452,6 @@ class Spline():
         # transform code block
         # ==================================================
 
-        inside_stroke_dict, skip_coordinate = self.trace_common(stroke_dict, key, bmp_image, y_offset, inside_stroke_dict, skip_coordinate)
+        is_modified, inside_stroke_dict, skip_coordinate = self.trace_common(stroke_dict, key, bmp_image, y_offset, inside_stroke_dict, skip_coordinate)
 
-        return spline_dict
+        return is_modified

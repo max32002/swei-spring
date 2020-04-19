@@ -231,12 +231,13 @@ class Convertor():
 
         self.sp.assign_config(self.config)
 
-        stroke_dict = self.sp.trace(stroke_dict, bmp_image)
+        ret, stroke_dict = self.sp.trace(stroke_dict, bmp_image)
 
-        if not stroke_dict is None:
-            #print("write to file:", filename_input)
-            self.write_to_file(filename_input,stroke_dict,readonly)
-            stroke_dict = None
+        if ret:
+            if not stroke_dict is None:
+                #print("write to file:", filename_input)
+                self.write_to_file(filename_input,stroke_dict,readonly)
+                stroke_dict = None
 
         return ret
 
@@ -266,7 +267,7 @@ class Convertor():
                 convert_count+=1
                 #print("convert list:", name)
             #break
-            if idx % 100 == 0:
+            if idx % 1000 == 0:
                 print("Processing:", idx)
 
         return idx

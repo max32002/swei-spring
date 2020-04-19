@@ -2,7 +2,7 @@
 #encoding=utf-8
 
 class TtfConfig():
-    VERSION = "1.020"
+    VERSION = "1.021"
     PROCESS_MODE = "SPRING"
 
     STYLE_INDEX = 4
@@ -36,17 +36,17 @@ class TtfConfig():
     ROW_TRIANGLE_CHIN_MIN = 21
     ROW_TRIANGLE_CHIN_MAX = 84
 
-    # in regular=46
+    # in regular=46, (case.11158 分, Regular) 69
     ROW_TRIANGLE_FLAT_CHIN_MIN = 26
-    ROW_TRIANGLE_FLAT_CHIN_MAX = 64
+    ROW_TRIANGLE_FLAT_CHIN_MAX = 84
 
     # for rule#101
     # in regular=103 to 112
     COL_STROKE_WIDTH_MIN = 53
     COL_STROKE_WIDTH_MAX = 133
 
-    # in regular=45 to 42
-    COL_TRIANGLE_CHIN_MIN = 35
+    # in regular=45 to 42, (case:.17729, 後) 34, (case:.18791, 應) 26
+    COL_TRIANGLE_CHIN_MIN = 23
     COL_TRIANGLE_CHIN_MAX = 55
 
     def apply_weight_setting(self):
@@ -75,7 +75,7 @@ class TtfConfig():
             self.COL_STROKE_WIDTH_MAX = 231
             
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 35
+            self.COL_TRIANGLE_CHIN_MIN = 31
             self.COL_TRIANGLE_CHIN_MAX = 85
 
         if self.STYLE in ["Bold"]:
@@ -99,7 +99,7 @@ class TtfConfig():
             self.COL_STROKE_WIDTH_MAX = 208
 
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 35
+            self.COL_TRIANGLE_CHIN_MIN = 31
             self.COL_TRIANGLE_CHIN_MAX = 85
 
 
@@ -116,7 +116,7 @@ class TtfConfig():
 
             # in regular=46
             self.ROW_TRIANGLE_FLAT_CHIN_MIN = 26
-            self.ROW_TRIANGLE_FLAT_CHIN_MAX = 96
+            self.ROW_TRIANGLE_FLAT_CHIN_MAX = 106
 
             # for rule#101
             # in regular=103 to 112
@@ -124,7 +124,7 @@ class TtfConfig():
             self.COL_STROKE_WIDTH_MAX = 183
 
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 35
+            self.COL_TRIANGLE_CHIN_MIN = 31
             self.COL_TRIANGLE_CHIN_MAX = 75
 
         if self.STYLE in ["Light","ExtraLight"]:
@@ -136,11 +136,11 @@ class TtfConfig():
             self.ROW_TRIANGLE_SLIDE_MAX = 141
             # in regular=29,31 to (.26356, 片)47
             self.ROW_TRIANGLE_CHIN_MIN = 18
-            self.ROW_TRIANGLE_CHIN_MAX = 82
+            self.ROW_TRIANGLE_CHIN_MAX = 80
 
             # in regular=46
             self.ROW_TRIANGLE_FLAT_CHIN_MIN = 22
-            self.ROW_TRIANGLE_FLAT_CHIN_MAX = 64
+            self.ROW_TRIANGLE_FLAT_CHIN_MAX = 80
 
             # for rule#101
             # in regular=103 to 112
@@ -152,11 +152,14 @@ class TtfConfig():
             self.COL_TRIANGLE_CHIN_MAX = 55
 
     def __init__(self, weight_code):
+        import datetime
+
         self.STYLE_INDEX = int(weight_code)
         self.apply_weight_setting()
         print("Transform Mode:", self.PROCESS_MODE)
         print("Transform Style:", self.STYLE)
         print("Transform Version:", self.VERSION)
+        print("Transform Time:", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     def hello(self):
         print("world!")
