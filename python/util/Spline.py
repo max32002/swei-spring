@@ -95,7 +95,7 @@ class Spline():
 
         glyph_margin["top"]  = None
         glyph_margin["bottom"] = None
-        glyph_margin["lef"] = None
+        glyph_margin["left"] = None
         glyph_margin["right"] = None
 
         if 1 in stroke_dict:
@@ -106,7 +106,7 @@ class Spline():
                 if glyph_margin["top"] is None:
                     glyph_margin["top"]  = stroke_dict[key]["top"]
                     glyph_margin["bottom"] = stroke_dict[key]["bottom"]
-                    glyph_margin["lef"] = stroke_dict[key]["lef"]
+                    glyph_margin["left"] = stroke_dict[key]["left"]
                     glyph_margin["right"] = stroke_dict[key]["right"]
 
  
@@ -114,8 +114,8 @@ class Spline():
                     glyph_margin["top"]  = spline_dict["top"]
                 if glyph_margin["bottom"] > spline_dict["bottom"]:
                     glyph_margin["bottom"] = spline_dict["bottom"]
-                if glyph_margin["lef"] > spline_dict["lef"]:
-                    glyph_margin["lef"] = spline_dict["lef"]
+                if glyph_margin["left"] > spline_dict["left"]:
+                    glyph_margin["left"] = spline_dict["left"]
                 if glyph_margin["right"] < spline_dict["right"]:
                     glyph_margin["right"] = spline_dict["right"]
 
@@ -213,7 +213,7 @@ class Spline():
 
         spline_dict["top"]  = margin_top
         spline_dict["bottom"] = margin_bottom
-        spline_dict["lef"] = margin_left
+        spline_dict["left"] = margin_left
         spline_dict["right"] = margin_right
 
     def split_spline(self, stroke_dict):
