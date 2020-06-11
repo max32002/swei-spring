@@ -2,7 +2,7 @@
 #encoding=utf-8
 
 class TtfConfig():
-    VERSION = "1.021"
+    VERSION = "1.030"
     PROCESS_MODE = "SPRING"
 
     STYLE_INDEX = 4

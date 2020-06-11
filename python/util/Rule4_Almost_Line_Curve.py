@@ -4,7 +4,7 @@
 from . import spline_util
 from . import Rule
 
-# RULE # 6
+# RULE # 4
 # 簡化 c 為 l
 # PS: 因為 array size change, so need redo.
 class Rule(Rule.Rule):
@@ -19,11 +19,11 @@ class Rule(Rule.Rule):
 
         # transform c to l for splash line.
         #大於等於 0.01 很醜！ex: 「㚞」的大，在 0.02變超細。
-        SLASH_IN_LINE_ACCURACY = 0.005
+        SLASH_IN_LINE_ACCURACY = 0.002
 
         # 愈長的曲線變直線，更醜。
-        SKIP_TOO_LONG_LINE_MERGE = 110
-
+        SKIP_TOO_LONG_LINE_MERGE_DEFAULT = 110
+        SKIP_TOO_LONG_LINE_MERGE = SKIP_TOO_LONG_LINE_MERGE_DEFAULT
 
         # clone
         format_dict_array=[]
@@ -43,18 +43,20 @@ class Rule(Rule.Rule):
                     # skip traveled nodes.
                     continue
 
+                is_debug_mode = False
+                #is_debug_mode = True
+
+                if is_debug_mode:
+                    debug_coordinate_list = [[621,801]]
+                    if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
+                        continue
+
+                    print("="*30)
+                    print("index:", idx)
+                    for debug_idx in range(8):
+                        print(debug_idx-2,": val#4:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
+
                 is_match_pattern = False
-
-                #print(idx,"debug rule6:",format_dict_array[idx]['code'])
-                
-                #if not [format_dict_array[idx]['x'],format_dict_array[idx]['y']]==[399,576]:
-                    #continue
-
-                #if True:
-                if False:
-                    print("-" * 20)
-                    for debug_idx in range(6):
-                        print(debug_idx-2,": values:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
 
                 if format_dict_array[(idx+1)%nodes_length]['t'] == 'c':
                     fail_code = 100
@@ -93,24 +95,53 @@ class Rule(Rule.Rule):
                 x2 = format_dict_array[(idx+1)%nodes_length]['x']
                 y2 = format_dict_array[(idx+1)%nodes_length]['y']
 
+                x2_1 = format_dict_array[(idx+1)%nodes_length]['x1']
+                y2_1 = format_dict_array[(idx+1)%nodes_length]['y1']
+                x2_2 = format_dict_array[(idx+1)%nodes_length]['x2']
+                y2_2 = format_dict_array[(idx+1)%nodes_length]['y2']
+
                 if is_match_pattern:
                     #print(idx,"debug rule6 P0:",format_dict_array[(idx+0)%nodes_length]['code'])
                     fail_code = 300
                     is_match_pattern = False
 
-                    x2_1 = format_dict_array[(idx+1)%nodes_length]['x1']
-                    y2_1 = format_dict_array[(idx+1)%nodes_length]['y1']
-                    x2_2 = format_dict_array[(idx+1)%nodes_length]['x2']
-                    y2_2 = format_dict_array[(idx+1)%nodes_length]['y2']
-
                     test_1 = spline_util.is_xyz_on_line(x1,y1,x2,y2,x2_1,y2_1,accuracy=DISTANCE_IN_LINE_ACCURACY)
-                    test_2 = spline_util.is_xyz_on_line(x1,y1,x2,y2,x2_2,y2_2,accuracy=DISTANCE_IN_LINE_ACCURACY)
+                    test_2 = None
+                    if x2_1 == x2_2 and y2_1 == y2_2:
+                        test_2 = test_1
+                    else:
+                        test_2 = spline_util.is_xyz_on_line(x1,y1,x2,y2,x2_2,y2_2,accuracy=DISTANCE_IN_LINE_ACCURACY)
+                    
+                    #print("DISTANCE_IN_LINE_ACCURACY:", DISTANCE_IN_LINE_ACCURACY)
+                    #print("test_1:", test_1)
+                    #print("test_2:", test_2)
                     if test_1 and test_2:
                         is_match_pattern = True
 
-                
+                if is_match_pattern:
+                    fail_code = 310
+                    is_match_pattern = False
+                    slide_percent_1 = spline_util.slide_percent(format_dict_array[(idx+0)%nodes_length]['x'],format_dict_array[(idx+0)%nodes_length]['y'],x2_1,y2_1,format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'])
+                    slide_percent_2 = None
+                    if x2_1 == x2_2 and y2_1 == y2_2:
+                        slide_percent_2 = slide_percent_1
+                    else:
+                        slide_percent_2 = spline_util.slide_percent(format_dict_array[(idx+0)%nodes_length]['x'],format_dict_array[(idx+0)%nodes_length]['y'],x2_2,y2_2,format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'])
+
+                    if is_debug_mode:
+                    #if False:
+                        print("slide_percent 1:", slide_percent_1)
+                        print("slide_percent 2:", slide_percent_2)
+
+                    if slide_percent_1 >= 1.982 and slide_percent_2 >= 1.982:
+                        is_match_pattern = True
+
                 # 太長會出問題，例如：的，絢 字。
                 # PS: to dot+1, distance in +0
+                if is_debug_mode:
+                    print("+0 distance:", format_dict_array[(idx+0)%nodes_length]['distance'])
+                    print("SKIP_TOO_LONG_LINE_MERGE:", SKIP_TOO_LONG_LINE_MERGE)
+
                 if format_dict_array[(idx+0)%nodes_length]['distance'] >= SKIP_TOO_LONG_LINE_MERGE:
                     fail_code = 400
                     is_match_pattern = False
@@ -126,18 +157,14 @@ class Rule(Rule.Rule):
                                             fail_code = 500
                                             is_match_pattern = False
 
-                if not is_match_pattern:
-                    #print(idx,"debug fail_code #6:", fail_code)
-                    pass
+                if is_debug_mode:
+                    if not is_match_pattern:
+                        print(idx,"debug fail_code #6:", fail_code)
+                    else:
+                        print("match rule #6:",idx)
 
                 if is_match_pattern:
-                    #print("match rule #6")
-
-                    #if True:
-                    if False:
-                        print("-" * 20)
-                        for debug_idx in range(6):
-                            print(debug_idx-2,": values for rule6:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
+                    #print("match rule #4")
 
                     # use default
                     new_x = format_dict_array[(idx+1)%nodes_length]['x']

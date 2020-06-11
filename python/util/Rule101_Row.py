@@ -53,21 +53,18 @@ class Rule(Rule.Rule):
                 if [format_dict_array[idx]['x'],format_dict_array[idx]['y']] in skip_coordinate:
                     continue
 
-                #print("-"*20)
-                #print(idx,"debug rule101:",format_dict_array[idx]['code'])
-
                 is_debug_mode = False
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[493,789]]
+                    debug_coordinate_list = [[563,183]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
                     print("="*30)
                     print("index:", idx)
                     for debug_idx in range(8):
-                        print(debug_idx-2,": values for rule101:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
+                        print(debug_idx-2,": val#101:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
 
                 # begin travel.
                 is_match_pattern = True
@@ -181,21 +178,41 @@ class Rule(Rule.Rule):
                                     if format_dict_array[(idx+3)%nodes_length]['y_direction'] > 0:
                                         is_match_pattern = True
 
-                    # not horizontal line
+                    # 增加新的 case: not horizontal line
                     RIGHT_ARM_LENGTH_MIN = 100
-                    RIGHT_ARM_Y_GAP_MAX = 30
-                    # 最少，手要伸這麼長才能判斷斜線。
+                    RIGHT_ARM_VERTICAL_DIFF_MAX = 3
+                    RIGHT_ARM_HORIZONTAL_DIFF_MAX = 3
                     # for case:.12816 「嘠」.
-                    if format_dict_array[(idx+0)%nodes_length]['distance'] >= RIGHT_ARM_LENGTH_MIN:
+                    # for case:.15996 尾。
+                    if not is_match_pattern:
                         fail_code = 440
-                        if format_dict_array[(idx+4)%nodes_length]['distance'] >= RIGHT_ARM_LENGTH_MIN:
-                            if abs(format_dict_array[(idx+0)%nodes_length]['y']-format_dict_array[(idx+1)%nodes_length]['y']) <= RIGHT_ARM_Y_GAP_MAX:
+
+                        new_x2, new_y2 = spline_util.two_point_extend(format_dict_array[(idx+4)%nodes_length]['x'],format_dict_array[(idx+4)%nodes_length]['y'],format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'],-1 * format_dict_array[(idx+0)%nodes_length]['distance'])
+                        next_line_distance = spline_util.get_distance(new_x2, new_y2,format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'])
+                        left_height = abs(format_dict_array[(idx+0)%nodes_length]['y']-format_dict_array[(idx+5)%nodes_length]['y'])
+                        right_height = abs(format_dict_array[(idx+1)%nodes_length]['y']-new_y2)
+                        height_diff = abs(left_height - right_height)
+                        width_diff = abs(format_dict_array[(idx+0)%nodes_length]['distance'] - next_line_distance)
+                        if is_debug_mode:
+                            print("+0 length:", format_dict_array[(idx+0)%nodes_length]['distance'])
+                            print("maybe next line end coordinate:",new_x2, new_y2)
+                            print("left_height:", left_height)
+                            print("right_height:", right_height)
+                            print("height_diff:", height_diff)
+                            print("width_diff:", width_diff)
+
+                        if height_diff <= RIGHT_ARM_VERTICAL_DIFF_MAX and width_diff <= RIGHT_ARM_HORIZONTAL_DIFF_MAX:
+                            if format_dict_array[(idx+0)%nodes_length]['x_direction'] > 0:
                                 if format_dict_array[(idx+1)%nodes_length]['y_direction'] > 0:
-                                    if format_dict_array[(idx+2)%nodes_length]['y_direction'] < 0:
-                                        if format_dict_array[(idx+3)%nodes_length]['y_direction'] < 0:
-                                            if format_dict_array[(idx+4)%nodes_length]['y_direction'] < 0:
-                                                is_match_pattern = True
-                                                is_slash_with_arm = True
+                                    if format_dict_array[(idx+1)%nodes_length]['x_direction'] > 0:
+                                        if format_dict_array[(idx+2)%nodes_length]['x_direction'] > 0:
+                                            if format_dict_array[(idx+2)%nodes_length]['y_direction'] < 0:
+                                                if format_dict_array[(idx+3)%nodes_length]['y_direction'] < 0:
+                                                    if format_dict_array[(idx+4)%nodes_length]['x_direction'] < 0:
+                                                        if format_dict_array[(idx+4)%nodes_length]['y_direction'] < 0:
+                                                            is_match_pattern = True
+                                                            is_slash_with_arm = True
+                                                            pass
 
                     RIGHT_SLASH_WITH_TRIANGLE_LENGTH_MIN = 130
                     # 實際值是=48, 允許再多一點.

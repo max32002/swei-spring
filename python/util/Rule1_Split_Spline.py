@@ -4,9 +4,11 @@
 from . import spline_util
 from . import Rule
 
-# RULE # 6
+# RULE # 1
 # 簡化 c 為 l
 # PS: 因為 array size change, so need redo.
+# PS: 這個已知，會造成錯誤，當新切出來的區塊為clockwise, 
+#      解法：需要先判斷新的二點之間，為 in stroke.
 class Rule(Rule.Rule):
     def __init__(self):
         pass

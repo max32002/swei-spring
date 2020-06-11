@@ -21,6 +21,7 @@ class Convertor():
         # return field.
         stroke_dict = {}
         encoding_string = None
+        width_string = None
         
         dot_dict = {}
         dots_array = []
@@ -32,6 +33,9 @@ class Convertor():
         code_encoding_string = 'Encoding: '
         code_encoding_string_length = len(code_encoding_string)
 
+        code_width_string = 'Width: '
+        code_width_string_length = len(code_width_string)
+
         code_begin_string = 'SplineSet'
         code_begin_string_length = len(code_begin_string)
 
@@ -42,10 +46,12 @@ class Convertor():
 
         stroke_index = 0
 
-
         for x_line in myfile:
             if code_encoding_string == x_line[:code_encoding_string_length]:
                 encoding_string = x_line[code_encoding_string_length:]
+
+            if code_width_string == x_line[:code_width_string_length]:
+                width_string = x_line[code_width_string_length:].strip()
 
             if not is_code_flag:
                 # check begin.
@@ -102,13 +108,18 @@ class Convertor():
 
                         x_line_array[0]=str(x)
                         x_line_array[1]=str(y)
+                        new_code = "%d %d m 1\n" % (x,y)
 
                     if t=='l':
                         x=int(float(x_line_array[1]))
                         y=int(float(x_line_array[2]))
+                        l_type = x_line_array[4].strip()
+                        if ',' in l_type:
+                            l_type = l_type.split(',')[0]
 
                         x_line_array[1]=str(x)
                         x_line_array[2]=str(y)
+                        new_code = " %d %d l %s\n" % (x,y,l_type)
 
                     if t=='c':
                         if len(x_line_array) >=7:
@@ -126,9 +137,16 @@ class Convertor():
                             x_line_array[5]=str(x)
                             x_line_array[6]=str(y)
 
+                            c_type = x_line_array[8].strip()
+                            if ',' in c_type:
+                                c_type = c_type.split(',')[0]
+
+                            new_code = " %d %d %d %d %d %d c %s\n" % (x1,y1,x2,y2,x,y,c_type)
+
                     #print("add to code:", x_line)
                     #dot_dict['code'] = x_line
-                    new_code = ' '.join(x_line_array)
+                    # keep extra infomation cause more error.
+                    #new_code = ' '.join(x_line_array)
                 dot_dict['code'] = new_code
 
 
@@ -143,7 +161,7 @@ class Convertor():
                 dots_array.append(dot_dict)
 
         myfile.close()
-        return stroke_dict, encoding_string
+        return stroke_dict, encoding_string, width_string
 
     def write_to_file(self, filename_input, stroke_dict, readonly):
         filename_input_new = filename_input + ".tmp"
@@ -204,40 +222,72 @@ class Convertor():
         
         stroke_dict = {}
         encoding_string = None
-        stroke_dict, encoding_string = self.load_to_memory(filename_input)
+        stroke_dict, encoding_string, width_string = self.load_to_memory(filename_input)
         
-        if not self.config.BMP_PATH is None:
-            if not encoding_string is None:
-                if ' ' in encoding_string:
-                    encoding_string_array = encoding_string.split(' ')
-                    unicode_string = encoding_string_array[self.config.UNICODE_FIELD-1]
-                    unicode_int = -1
-                    if len(unicode_string) > 0:
-                        unicode_int = int(unicode_string)
-                    if unicode_int > 0:
-                        filename = "U_%s.bmp" % (unicode_int)
-                        bmp_path = os.path.join(self.config.BMP_PATH, filename)
-                        #print("bmp:", bmp_path, filename_input)
-                        if os.path.exists(bmp_path):
-                            #PIL
-                            bmp_image = Image.open(bmp_path)
-                            
-                            #OpenCV
-                            #bmp_image = cv2.imread(bmp_path)
-                        else:
-                            print("exported image not exist:", bmp_path)
-                            pass
+        unicode_int = -1
+        if not encoding_string is None:
+            if ' ' in encoding_string:
+                encoding_string_array = encoding_string.split(' ')
+                unicode_string = encoding_string_array[self.config.UNICODE_FIELD-1]
+                if len(unicode_string) > 0:
+                    unicode_int = int(unicode_string)
+                if unicode_int > 0 and not self.config.BMP_PATH is None:
+                    filename = "U_%s.bmp" % (unicode_int)
+                    bmp_path = os.path.join(self.config.BMP_PATH, filename)
+                    #print("bmp:", bmp_path, filename_input)
+                    if os.path.exists(bmp_path):
+                        #PIL
+                        bmp_image = Image.open(bmp_path)
+                        
+                        #OpenCV
+                        #bmp_image = cv2.imread(bmp_path)
+                    else:
+                        print("exported image not exist:", bmp_path)
+                        pass
         
+        width_int = -1
+        if len(width_string) > 0:
+            width_int = int(width_string)
+            #print("glyph width:", width_int)
+            if width_int <= 0:
+                # do nothing.
+                unicode_int = -1
 
-        self.sp.assign_config(self.config)
+            #if width_int <= 990:
+                #unicode_int = -1
 
-        ret, stroke_dict = self.sp.trace(stroke_dict, bmp_image)
+        # special range only
+        # 中日韓統一表意文字擴充區A, 3400 – U+4DBF
+        # CJK Unified Ideographs, 4E00 - U+9FFF
+        # 中日韓統一表意文字擴充區B, U+20000 – U+2A6DF
+        # 中日韓統一表意文字擴展區G, U+30000 – U+3134F
+        #print("unicode_int:", unicode_int)
+        convert_range_list = [['3400','9FFF'],['20000','3134F']]
+        convert_target_range = False
+        #convert_target_range = True     # not full scan, debug purpose.
+        if convert_target_range:
+            is_match_convert_target = False
 
-        if ret:
+            for r in convert_range_list:
+                if unicode_int >= int(r[0],16) and unicode_int<=int(r[1],16):
+                    is_match_convert_target = True
+                if is_match_convert_target:
+                    break
+            #print("is_match_convert_target:", is_match_convert_target)
+            if not is_match_convert_target:
+                unicode_int = -1
+
+        is_modified = False
+        if unicode_int > 0: 
+            self.sp.assign_config(self.config)
+            is_modified, stroke_dict = self.sp.trace(stroke_dict, unicode_int, bmp_image)
+
+        if is_modified:
             if not stroke_dict is None:
                 #print("write to file:", filename_input)
                 self.write_to_file(filename_input,stroke_dict,readonly)
                 stroke_dict = None
+                ret = True
 
         return ret
 
@@ -267,6 +317,7 @@ class Convertor():
                 convert_count+=1
                 #print("convert list:", name)
             #break
+            
             if idx % 1000 == 0:
                 print("Processing:", idx)
 

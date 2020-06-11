@@ -63,7 +63,7 @@ class Rule(Rule.Rule):
                     print("="*30)
                     print("index:", idx)
                     for debug_idx in range(8):
-                        print(debug_idx-2,": values for rule101:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
+                        print(debug_idx-2,": val#102:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
 
                 # begin travel.
                 is_match_pattern = True
