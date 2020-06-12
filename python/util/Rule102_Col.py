@@ -19,13 +19,21 @@ class Rule(Rule.Rule):
         SLIDE_1_PERCENT_MIN = 1.11
         SLIDE_1_PERCENT_MAX = 1.83
 
-        # default: 0.7 to 0.53
+        # default: 0.7 to 0.53, 
         SLIDE_2_PERCENT_MIN = 0.43
         SLIDE_2_PERCENT_MAX = 0.8
 
         # default: 1.76 to 1.9, (橫線) 1.9-1.96, (for case:.26335 狀) 1.633
         SLIDE_3_PERCENT_MIN = 1.52
         SLIDE_3_PERCENT_MAX = 1.98
+
+        # for uni83A3 莣, 1.25/0.81/1.79
+        SLIDE_11_PERCENT_MIN = 1.05
+        SLIDE_11_PERCENT_MAX = 1.45
+        SLIDE_12_PERCENT_MIN = 0.61
+        SLIDE_12_PERCENT_MAX = 1.01
+        SLIDE_13_PERCENT_MIN = 1.59
+        SLIDE_13_PERCENT_MAX = 1.96
 
         # clone
         format_dict_array=[]
@@ -56,7 +64,7 @@ class Rule(Rule.Rule):
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[422,502]]
+                    debug_coordinate_list = [[242,727]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
@@ -142,6 +150,14 @@ class Rule(Rule.Rule):
                         if slide_percent_2 >= SLIDE_2_PERCENT_MIN and slide_percent_2 <= SLIDE_2_PERCENT_MAX:
                             fail_code = 520
                             if slide_percent_3 >= SLIDE_3_PERCENT_MIN and slide_percent_3 <= SLIDE_3_PERCENT_MAX:
+                                is_match_pattern = True
+
+                    # for uni83A3 莣, 1.25/0.81/1.79
+                    if slide_percent_1 >= SLIDE_11_PERCENT_MIN and slide_percent_1 <= SLIDE_11_PERCENT_MAX:
+                        fail_code = 530
+                        if slide_percent_2 >= SLIDE_12_PERCENT_MIN and slide_percent_2 <= SLIDE_12_PERCENT_MAX:
+                            fail_code = 540
+                            if slide_percent_3 >= SLIDE_13_PERCENT_MIN and slide_percent_3 <= SLIDE_13_PERCENT_MAX:
                                 is_match_pattern = True
 
                 if is_debug_mode:
