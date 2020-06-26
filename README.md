@@ -20,7 +20,7 @@
 ![字體比較](https://github.com/max32002/swei-spring/raw/master/preview/sugar_styles.png)
 
 ## 更新日誌
-[點擊此處](https://github.com/max32002/swei-spring/change_log.md) 查看更新記錄。
+[點擊此處](https://github.com/max32002/swei-spring/blob/master/change_log.md) 查看更新記錄。
 
 ## 下載字型
 
