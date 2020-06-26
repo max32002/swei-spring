@@ -88,6 +88,43 @@ class Rule():
         spline_dict['dots'] = format_dict_array
 
 
+    # purpose: apply new value to dict from code.
+    #        : for only update specific index only.
+    def apply_code(self, format_dict_array, idx):
+        code = format_dict_array[idx]['code']
+        # type
+        t=''
+        if ' m ' in code:
+            t='m'
+        if ' l ' in code:
+            t='l'
+        if ' c ' in code:
+            t='c'
+
+        old_code_array = code.split(' ')
+        if t=='c':
+            format_dict_array[idx]['x1']=int(float(old_code_array[1]))
+            format_dict_array[idx]['y1']=int(float(old_code_array[2]))
+            format_dict_array[idx]['x2']=int(float(old_code_array[3]))
+            format_dict_array[idx]['y2']=int(float(old_code_array[4]))
+            format_dict_array[idx]['x']=int(float(old_code_array[5]))
+            format_dict_array[idx]['y']=int(float(old_code_array[6]))
+        else:
+            format_dict_array[idx]['x']=int(float(old_code_array[1]))
+            format_dict_array[idx]['y']=int(float(old_code_array[2]))
+
+    # purpose: get current index distance,
+    #        : for only update specific index only.
+    def current_distance(self, format_dict_array, idx):
+        nodes_length = len(format_dict_array)
+        next_index = (idx+1)%nodes_length
+        current_x = format_dict_array[idx]['x']
+        current_y = format_dict_array[idx]['y']
+        next_x = format_dict_array[next_index]['x']
+        next_y = format_dict_array[next_index]['y']
+        distance = spline_util.get_distance(current_x,current_y,next_x,next_y)
+        return distance
+
     def caculate_distance(self, format_dict_array):
         nodes_length = len(format_dict_array)
         for idx in range(nodes_length):
@@ -95,18 +132,7 @@ class Rule():
 
             # It's easy to forget to fill attrib!
             # restore value from code.
-            old_code_string = format_dict_array[idx]['code']
-            old_code_array = old_code_string.split(' ')
-            if format_dict_array[idx]['t']=='c':
-                format_dict_array[idx]['x1']=int(float(old_code_array[1]))
-                format_dict_array[idx]['y1']=int(float(old_code_array[2]))
-                format_dict_array[idx]['x2']=int(float(old_code_array[3]))
-                format_dict_array[idx]['y2']=int(float(old_code_array[4]))
-                format_dict_array[idx]['x']=int(float(old_code_array[5]))
-                format_dict_array[idx]['y']=int(float(old_code_array[6]))
-            else:
-                format_dict_array[idx]['x']=int(float(old_code_array[1]))
-                format_dict_array[idx]['y']=int(float(old_code_array[2]))
+            self.apply_code(format_dict_array,idx)
 
             current_x = format_dict_array[idx]['x']
             current_y = format_dict_array[idx]['y']
@@ -1010,3 +1036,63 @@ class Rule():
                         is_match_pattern = True
 
         return is_match_pattern, fail_code
+
+    def apply_round(self,format_dict_array,idx):
+        nodes_length = len(format_dict_array)
+        current_x = format_dict_array[idx]['x']
+        current_y = format_dict_array[idx]['y']
+
+        end_x = format_dict_array[(idx+3)%nodes_length]['x']
+        end_y = format_dict_array[(idx+3)%nodes_length]['y']
+
+        #full_distance = spline_util.get_distance(current_x,current_y,end_x,end_y)
+        #distance_diff = full_distance - format_dict_array[(idx+0)%nodes_length]['distance']
+        #new_x,new_y=spline_util.two_point_extend(current_x,current_y,format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'], distance_diff)
+        #print("new_x,new_y:", new_x,new_y)
+
+        
+        center_x, center_y = 0,0
+        if not format_dict_array[(idx+0)%nodes_length]['x_equal_fuzzy']:
+            # normal case.
+            center_distance = format_dict_array[(idx+1)%nodes_length]['distance'] * 0.5
+            center_x, center_y=spline_util.two_point_extend(current_x,current_y,format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'], center_distance)
+        else:
+            # begin from vertical.
+            center_x, center_y=int((format_dict_array[(idx+1)%nodes_length]['x'] + format_dict_array[(idx+3)%nodes_length]['x'])/2),int((format_dict_array[(idx+1)%nodes_length]['y'] + format_dict_array[(idx+3)%nodes_length]['y'])/2)
+
+        #print("center_x,center_y:", center_x,center_y)
+
+        center_x_offset = format_dict_array[(idx+2)%nodes_length]['x'] - center_x
+        center_y_offset = format_dict_array[(idx+2)%nodes_length]['y'] - center_y
+
+        new_end_x = end_x + center_x_offset
+        new_end_y = end_y + center_y_offset
+
+        # update slide #2
+        new_code= " %d %d %d %d %d %d c 1\n" % (new_end_x,new_end_y,new_end_x,new_end_y,end_x,end_y)
+        format_dict_array[(idx+3)%nodes_length]['code']=new_code
+
+        # update slide #1
+        left_top_x = format_dict_array[(idx+1)%nodes_length]['x'] + center_x_offset
+        left_top_y = format_dict_array[(idx+1)%nodes_length]['y'] + center_y_offset
+
+        current_x = format_dict_array[(idx+1)%nodes_length]['x']
+        current_y = format_dict_array[(idx+1)%nodes_length]['y']
+
+        re_center_x,re_center_y=0,0
+        if not format_dict_array[(idx+0)%nodes_length]['x_equal_fuzzy']:
+            # normal case.
+            right_distance = spline_util.get_distance(current_x,current_y,end_x,end_y)
+            #print("right_distance #2:", right_distance)
+            re_center_x,re_center_y=spline_util.two_point_extend(format_dict_array[(idx+0)%nodes_length]['x'],format_dict_array[(idx+0)%nodes_length]['y'],format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'], int(right_distance / 2))
+            #print("re_center_x,re_center_y:", re_center_x,re_center_y)
+            re_center_x += center_x_offset
+            re_center_y += center_y_offset
+        else:
+            re_center_x = center_x
+            re_center_y = format_dict_array[(idx+2)%nodes_length]['y']
+
+        new_code= " %d %d %d %d %d %d c 1\n" % (left_top_x,left_top_y,left_top_x,left_top_y,re_center_x,re_center_y)
+        format_dict_array[(idx+2)%nodes_length]['code']=new_code
+        self.apply_code(format_dict_array, (idx+2)%nodes_length)
+

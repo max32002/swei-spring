@@ -363,6 +363,11 @@ class Spline():
         ru105.assign_config(self.config)
         ru105.assign_unicode(unicode_int)
 
+        from . import Rule106_Little_Mountain
+        ru106=Rule106_Little_Mountain.Rule()
+        ru106.assign_config(self.config)
+        ru106.assign_unicode(unicode_int)
+
         # start process here.
         spline_dict = stroke_dict[key]
 
@@ -377,11 +382,14 @@ class Spline():
         if DISABLE_ALL_RULE:
             redo_travel=False
             pass
+
+        skip_coordinate_rule = []
         while redo_travel:
-            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
-        ru101 = None
+        # redo again after all.
+        #ru101 = None
 
         # start to travel nodes for [RULE #102]
         # 直線開頭三角形轉長方形
@@ -393,8 +401,10 @@ class Spline():
         if DISABLE_ALL_RULE:
             redo_travel=False
             pass
+            
+        skip_coordinate_rule = []
         while redo_travel:
-            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru102.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru102.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
         ru102 = None
@@ -442,11 +452,48 @@ class Spline():
         if DISABLE_ALL_RULE:
             redo_travel=False
             pass
+        skip_coordinate_rule = []
         while redo_travel:
-            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru105.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru105.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
         ru105 = None
+
+        # start to travel nodes for [RULE #106]
+        # 二個筆畫，產生出來在直線的三角形
+        if DEBUG_CRASH_RULE:
+            print("start Rule # 106...")
+        idx=-1
+        redo_travel=False   # Disable
+        redo_travel=True    # Enable
+        if DISABLE_ALL_RULE:
+            redo_travel=False
+            pass
+        skip_coordinate_rule = []
+        while redo_travel:
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru106.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
+            if redo_travel:
+                is_modified = True
+        ru106 = None
+
+        # start to travel nodes for [RULE #101]
+        # PS: 105+106, 改變外形後，會讓 101 重新 match.
+        if is_modified:
+            if DEBUG_CRASH_RULE:
+                print("start Rule # 101...")
+            idx=-1
+            redo_travel=False   # Disable
+            redo_travel=True    # Enable
+            if DISABLE_ALL_RULE:
+                redo_travel=False
+                pass
+
+            skip_coordinate_rule = []
+            while redo_travel:
+                redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
+                if redo_travel:
+                    is_modified = True
+            ru101 = None
 
         return is_modified, inside_stroke_dict, skip_coordinate
 

@@ -14,7 +14,7 @@ class Rule(Rule.Rule):
     def apply(self, spline_dict, resume_idx):
         redo_travel=False
 
-        NOISE_DISTANCE = 4
+        NOISE_DISTANCE = 6
 
         # clone
         format_dict_array=[]

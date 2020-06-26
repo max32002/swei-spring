@@ -11,7 +11,7 @@ class Rule(Rule.Rule):
     def __init__(self):
         pass
 
-    def apply(self, spline_dict, resume_idx, inside_stroke_dict,skip_coordinate):
+    def apply(self, spline_dict, resume_idx, inside_stroke_dict,skip_coordinate, skip_coordinate_rule):
         redo_travel=False
         check_first_point = False
 
@@ -24,8 +24,9 @@ class Rule(Rule.Rule):
         SLIDE_2_PERCENT_MAX = 0.8
 
         # default: 1.76 to 1.9, (橫線) 1.9-1.96, (for case:.26335 狀) 1.633
+        # for case uni6507 攇, 1.99
         SLIDE_3_PERCENT_MIN = 1.52
-        SLIDE_3_PERCENT_MAX = 1.98
+        SLIDE_3_PERCENT_MAX = 1.99
 
         # for uni83A3 莣, 1.25/0.81/1.79
         SLIDE_11_PERCENT_MIN = 1.05
@@ -33,7 +34,7 @@ class Rule(Rule.Rule):
         SLIDE_12_PERCENT_MIN = 0.61
         SLIDE_12_PERCENT_MAX = 1.01
         SLIDE_13_PERCENT_MIN = 1.59
-        SLIDE_13_PERCENT_MAX = 1.96
+        SLIDE_13_PERCENT_MAX = 1.99
 
         # clone
         format_dict_array=[]
@@ -53,18 +54,27 @@ class Rule(Rule.Rule):
                     # skip traveled nodes.
                     continue
 
+                is_debug_mode = False
+                #is_debug_mode = True
+
                 # 要轉換的角，不能就是我們產生出來的點。
                 if [format_dict_array[idx]['x'],format_dict_array[idx]['y']] in skip_coordinate:
+                    if is_debug_mode:
+                        print("match skip dot +0:",[format_dict_array[(idx+0)%nodes_length]['x'],format_dict_array[(idx+0)%nodes_length]['y']])
+                        pass
                     continue
 
-                #print("-"*20)
-                #print(idx,"debug rule102:",format_dict_array[idx]['code'])
+                if format_dict_array[idx]['code'] in skip_coordinate_rule:
+                    if is_debug_mode:
+                        print("match skip skip_coordinate_rule +0:",[format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y']])
+                        pass
+                    continue
 
                 is_debug_mode = False
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[242,727]]
+                    debug_coordinate_list = [[164,600]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
@@ -84,6 +94,8 @@ class Rule(Rule.Rule):
                         if format_dict_array[(idx+3)%nodes_length]['t'] == 'c':
                             is_match_pattern = True
 
+                is_more_one_dot = False
+
                 if is_match_pattern:
                     fail_code = 200
                     is_match_pattern = False
@@ -91,10 +103,27 @@ class Rule(Rule.Rule):
                         fail_code = 210
                         if format_dict_array[(idx+1)%nodes_length]['distance'] <= self.config.COL_STROKE_WIDTH_MAX:
                             fail_code = 220
+                            
                             if format_dict_array[(idx+2)%nodes_length]['distance'] >= self.config.COL_TRIANGLE_CHIN_MIN:
                                 fail_code = 230
                                 if format_dict_array[(idx+2)%nodes_length]['distance'] <= self.config.COL_TRIANGLE_CHIN_MAX:
                                     is_match_pattern = True
+
+                            # +2 & +3 are small edge.
+                            # for case: uni6AB9 檹
+                            # ps: 可能同時 is_match_pattern = True 在 fail_code 230 還有下面的 fail_code 240
+                            small_edge_sum = format_dict_array[(idx+2)%nodes_length]['distance']+format_dict_array[(idx+3)%nodes_length]['distance']
+                            #print("small_edge_sum:",small_edge_sum)
+                            if format_dict_array[(idx+2)%nodes_length]['distance'] < 45:
+                                if format_dict_array[(idx+3)%nodes_length]['distance'] < 45:
+                                    fail_code = 240
+                                    if small_edge_sum >= self.config.COL_TRIANGLE_CHIN_MIN:
+                                        if small_edge_sum <= self.config.COL_TRIANGLE_CHIN_MAX:
+                                            if format_dict_array[(idx+2)%nodes_length]['x_direction'] == format_dict_array[(idx+3)%nodes_length]['x_direction']:
+                                                if format_dict_array[(idx+2)%nodes_length]['y_direction'] == format_dict_array[(idx+3)%nodes_length]['y_direction']:
+                                                    is_more_one_dot = True
+                                                    is_match_pattern = True
+
 
                 if is_match_pattern:
                     fail_code = 300
@@ -160,6 +189,18 @@ class Rule(Rule.Rule):
                             if slide_percent_3 >= SLIDE_13_PERCENT_MIN and slide_percent_3 <= SLIDE_13_PERCENT_MAX:
                                 is_match_pattern = True
 
+                    if not is_match_pattern:
+                        if is_more_one_dot:
+                            slide_percent_2 = spline_util.slide_percent(format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y'],format_dict_array[(idx+2)%nodes_length]['x'],format_dict_array[(idx+2)%nodes_length]['y'],format_dict_array[(idx+4)%nodes_length]['x'],format_dict_array[(idx+4)%nodes_length]['y'])
+                            slide_percent_3 = spline_util.slide_percent(format_dict_array[(idx+2)%nodes_length]['x'],format_dict_array[(idx+2)%nodes_length]['y'],format_dict_array[(idx+4)%nodes_length]['x'],format_dict_array[(idx+4)%nodes_length]['y'],format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'])
+
+                            if slide_percent_1 >= SLIDE_1_PERCENT_MIN and slide_percent_1 <= SLIDE_1_PERCENT_MAX:
+                                fail_code = 550
+                                if slide_percent_2 >= SLIDE_2_PERCENT_MIN and slide_percent_2 <= SLIDE_2_PERCENT_MAX:
+                                    fail_code = 551
+                                    if slide_percent_3 >= SLIDE_3_PERCENT_MIN and slide_percent_3 <= SLIDE_3_PERCENT_MAX:
+                                        is_match_pattern = True
+
                 if is_debug_mode:
                     if not is_match_pattern:
                         print("#", idx,": debug fail_code#101:", fail_code)
@@ -205,4 +246,4 @@ class Rule(Rule.Rule):
             # check close path.
             self.reset_first_point(format_dict_array, spline_dict)
 
-        return redo_travel, resume_idx, inside_stroke_dict,skip_coordinate
+        return redo_travel, resume_idx, inside_stroke_dict,skip_coordinate, skip_coordinate_rule
