@@ -142,6 +142,10 @@ class Rule():
             distance = spline_util.get_distance(current_x,current_y,next_x,next_y)
             format_dict_array[idx]['distance']=distance
 
+            format_dict_array[idx]['match_stroke_width'] = False
+            if distance >= self.config.STROKE_WIDTH_MIN and distance <= self.config.STROKE_WIDTH_MAX:
+                format_dict_array[idx]['match_stroke_width'] = True
+
             format_dict_array[idx]['x_direction']=0
             if next_x > current_x:
                 format_dict_array[idx]['x_direction']=1

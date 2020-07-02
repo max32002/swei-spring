@@ -22,9 +22,9 @@ class Rule(Rule.Rule):
         SLIDE_1_PERCENT_MIN = 1.58
         SLIDE_1_PERCENT_MAX = 1.93
 
-        # default: 1.34 (uni68F0,棰)
+        # default: 1.34 (uni68F0,棰) / 1.49 (uni8F1F,輟)
         SLIDE_2_PERCENT_MIN = 1.14
-        SLIDE_2_PERCENT_MAX = 1.54
+        SLIDE_2_PERCENT_MAX = 1.60
 
         # default: 1.86 (uni68F0,棰)
         SLIDE_3_PERCENT_MIN = 1.66
@@ -41,6 +41,11 @@ class Rule(Rule.Rule):
         # default: 1.54 (uni6691,暑) / 1.04 (uni653F,政) / 0.91 (uni6472,摲)
         SLIDE_33_PERCENT_MIN = 0.71
         SLIDE_33_PERCENT_MAX = 1.74
+
+        # for uni8F1F「輟」 0.54
+        # very short edge.
+        SLIDE_43_PERCENT_MIN = 0.14
+        SLIDE_43_PERCENT_MAX = 1.74
 
         # clone
         format_dict_array=[]
@@ -80,7 +85,7 @@ class Rule(Rule.Rule):
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[305,737]]
+                    debug_coordinate_list = [[398,363]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
@@ -154,6 +159,7 @@ class Rule(Rule.Rule):
                                 if format_dict_array[(idx+2)%nodes_length]['x_direction']>0:
                                     if format_dict_array[(idx+2)%nodes_length]['y_direction']<0:
                                         fail_code = 330
+
                                         # case for 「棰」
                                         if format_dict_array[(idx+3)%nodes_length]['y_equal_fuzzy']:
                                             if format_dict_array[(idx+3)%nodes_length]['x_direction'] > 0:
@@ -169,6 +175,12 @@ class Rule(Rule.Rule):
                                             if format_dict_array[(idx+3)%nodes_length]['x_direction'] > 0:
                                                 if format_dict_array[(idx+3)%nodes_length]['y_direction'] > 0:
                                                     is_match_pattern = True
+
+                                        # for uni8F1F「輟」
+                                        # very short edge.
+                                        if format_dict_array[(idx+3)%nodes_length]['distance'] <= 20:
+                                            is_match_pattern = True
+
 
                     if is_debug_mode:
                         print("is_begin_with_vertical:", is_begin_with_vertical)
@@ -225,6 +237,14 @@ class Rule(Rule.Rule):
                                 # end with vertical
                                 if slide_percent_3 >= SLIDE_13_PERCENT_MIN and slide_percent_3 <= SLIDE_13_PERCENT_MAX:
                                     is_match_pattern = True
+
+                            # for uni8F1F「輟」
+                            # very short edge.
+                            # ps: 這個可能會 is_end_with_slash / is_end_with_vertical / is_end_with_horizon
+                            if not is_match_pattern:
+                                if format_dict_array[(idx+3)%nodes_length]['distance'] <= 20:
+                                    if slide_percent_3 >= SLIDE_43_PERCENT_MIN and slide_percent_3 <= SLIDE_43_PERCENT_MAX:
+                                        is_match_pattern = True
 
                 if is_debug_mode:
                     if not is_match_pattern:

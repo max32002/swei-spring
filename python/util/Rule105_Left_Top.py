@@ -30,9 +30,11 @@ class Rule(Rule.Rule):
         SLIDE_12_PERCENT_MIN = 1.05
         SLIDE_12_PERCENT_MAX = 1.35
 
+        # default: 1.38 for (uni8236,舶)
         # default: 1.77 for (uni6B1E,欞)
-        SLIDE_22_PERCENT_MIN = 1.57
-        SLIDE_22_PERCENT_MAX = 1.87
+        # default: 1.89 for (uni66AB,暫)
+        SLIDE_22_PERCENT_MIN = 1.28
+        SLIDE_22_PERCENT_MAX = 1.94
 
         # clone
         format_dict_array=[]
@@ -72,7 +74,7 @@ class Rule(Rule.Rule):
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[564,253]]
+                    debug_coordinate_list = [[575,628]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
@@ -164,20 +166,37 @@ class Rule(Rule.Rule):
                         fail_code = 310
 
                         if not is_end_with_vertical:
+                            fail_code = 320
                             # horizon.
                             if slide_percent_2 >= SLIDE_2_PERCENT_MIN and slide_percent_2 <= SLIDE_2_PERCENT_MAX:
                                 is_match_pattern = True
                         else:
+                            fail_code = 330
                             # slash or vertical.
                             if slide_percent_2 >= SLIDE_12_PERCENT_MIN and slide_percent_2 <= SLIDE_12_PERCENT_MAX:
                                 is_match_pattern = True
                             else:
-                                # for (uni6B1E,欞)
+                                # for uni6B1E,欞的口
                                 # for long edge, large angel.
-                                if format_dict_array[(idx+1)%nodes_length]['distance']>=80:
-                                    if format_dict_array[(idx+0)%nodes_length]['x_equal_fuzzy']:
+                                fail_code = 340
+                                
+                                if format_dict_array[(idx+0)%nodes_length]['x_equal_fuzzy']:
+                                    if format_dict_array[(idx+1)%nodes_length]['distance']>=80:
                                         if slide_percent_2 >= SLIDE_22_PERCENT_MIN and slide_percent_2 <= SLIDE_22_PERCENT_MAX:
                                             is_match_pattern = True
+
+                                # for uni66AB,暫的斤
+                                if not is_match_pattern:
+                                    fail_code = 350
+                                    if format_dict_array[(idx+0)%nodes_length]['x_equal_fuzzy']:
+                                        if format_dict_array[(idx+1)%nodes_length]['match_stroke_width']:
+                                            if format_dict_array[(idx+0)%nodes_length]['distance']>=90:
+                                                if format_dict_array[(idx+2)%nodes_length]['distance']>=90:
+                                                    if format_dict_array[(idx+0)%nodes_length]['distance'] > format_dict_array[(idx+1)%nodes_length]['distance']:
+                                                        if format_dict_array[(idx+2)%nodes_length]['distance'] > format_dict_array[(idx+1)%nodes_length]['distance']:
+                                                            if slide_percent_2 >= SLIDE_22_PERCENT_MIN and slide_percent_2 <= SLIDE_22_PERCENT_MAX:
+                                                                is_match_pattern = True
+
 
                 if is_debug_mode:
                     if not is_match_pattern:

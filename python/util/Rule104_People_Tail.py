@@ -12,7 +12,7 @@ class Rule(Rule.Rule):
     def __init__(self):
         pass
 
-    def apply(self, spline_dict, resume_idx, inside_stroke_dict,skip_coordinate):
+    def apply(self, spline_dict, resume_idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule):
         redo_travel=False
         check_first_point = False
 
@@ -55,12 +55,21 @@ class Rule(Rule.Rule):
                     # skip traveled nodes.
                     continue
 
+                is_debug_mode = False
+                #is_debug_mode = True
+
                 # 要轉換的角，不能就是我們產生出來的點。
                 if [format_dict_array[idx]['x'],format_dict_array[idx]['y']] in skip_coordinate:
+                    if is_debug_mode:
+                        print("match skip dot +0:",[format_dict_array[(idx+0)%nodes_length]['x'],format_dict_array[(idx+0)%nodes_length]['y']])
+                        pass
                     continue
 
-                #print("-"*20)
-                #print(idx,"debug rule104:",format_dict_array[idx]['code'])
+                if format_dict_array[idx]['code'] in skip_coordinate_rule:
+                    if is_debug_mode:
+                        print("match skip skip_coordinate_rule +0:",[format_dict_array[(idx+1)%nodes_length]['x'],format_dict_array[(idx+1)%nodes_length]['y']])
+                        pass
+                    continue
 
                 is_debug_mode = False
                 #is_debug_mode = True
@@ -93,18 +102,18 @@ class Rule(Rule.Rule):
                 if is_match_pattern:
                     fail_code = 200
                     is_match_pattern = False
-                    if format_dict_array[(idx+0)%nodes_length]['distance'] >= self.config.COL_STROKE_WIDTH_MIN:
+                    if format_dict_array[(idx+0)%nodes_length]['distance'] >= self.config.STROKE_WIDTH_MIN:
                         fail_code = 210
                         if format_dict_array[(idx+1)%nodes_length]['distance'] >= self.config.COL_TRIANGLE_CHIN_MIN:
                             fail_code = 220
-                            if format_dict_array[(idx+1)%nodes_length]['distance'] <= self.config.COL_STROKE_WIDTH_MAX:
+                            if format_dict_array[(idx+1)%nodes_length]['distance'] <= self.config.STROKE_WIDTH_MAX:
                                 fail_code = 230
                                 if format_dict_array[(idx+2)%nodes_length]['distance'] >= self.config.COL_TRIANGLE_CHIN_MIN:
                                     fail_code = 240
-                                    if format_dict_array[(idx+2)%nodes_length]['distance'] <= self.config.COL_STROKE_WIDTH_MAX:
+                                    if format_dict_array[(idx+2)%nodes_length]['distance'] <= self.config.STROKE_WIDTH_MAX:
                                         fail_code = 250
                                         # should very long
-                                        if format_dict_array[(idx+3)%nodes_length]['distance'] >= self.config.COL_STROKE_WIDTH_MAX:
+                                        if format_dict_array[(idx+3)%nodes_length]['distance'] >= self.config.STROKE_WIDTH_MAX:
                                             is_match_pattern = True
 
                 if is_match_pattern:
@@ -203,16 +212,23 @@ class Rule(Rule.Rule):
                     #print("del code:", format_dict_array[(idx+3)%nodes_length]['code'])
                     del format_dict_array[(idx+2)%nodes_length]
 
-                    # we generated nodes
-                    #skip_coordinate.append([center_x,center_y])
+                    if idx > (idx+2)%nodes_length:
+                        idx -=1
+                    nodes_length = len(format_dict_array)
 
                     redo_travel=True
                     check_first_point = True
                     resume_idx = -1
                     break
 
+        if redo_travel:
+            nodes_length = len(format_dict_array)
+            code_added = format_dict_array[(idx+0)%nodes_length]['code']
+            #print("code_added:", code_added)
+            skip_coordinate_rule.append(code_added)
+
         if check_first_point:
             # check close path.
             self.reset_first_point(format_dict_array, spline_dict)
 
-        return redo_travel, resume_idx, inside_stroke_dict,skip_coordinate
+        return redo_travel, resume_idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule

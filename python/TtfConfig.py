@@ -2,7 +2,7 @@
 #encoding=utf-8
 
 class TtfConfig():
-    VERSION = "1.042"
+    VERSION = "1.046"
     PROCESS_MODE = "SPRING"
     #PROCESS_MODE = "MEATBALL"
 
@@ -28,7 +28,8 @@ class TtfConfig():
     # for rule#101
     # in regular=80 to 57
     # for case:.2639 「真」被擠壓為38
-    ROW_TRIANGLE_HEIGHT_MIN = 30
+    # for case:uni7665 癥，中間的「山」為29
+    ROW_TRIANGLE_HEIGHT_MIN = 26
     # for case:uni4E00 一：104
     ROW_TRIANGLE_HEIGHT_MAX = 115
     
@@ -49,11 +50,12 @@ class TtfConfig():
 
     # for rule#101
     # in regular=103 to 112
-    COL_STROKE_WIDTH_MIN = 53
-    COL_STROKE_WIDTH_MAX = 133
+    STROKE_WIDTH_MIN = 43
+    STROKE_WIDTH_MAX = 133
 
     # in regular=45 to 42, (case:.17729, 後) 34, (case:.18791, 應) 26
-    COL_TRIANGLE_CHIN_MIN = 23
+    # for uni8763 蝣的子，19
+    COL_TRIANGLE_CHIN_MIN = 17
     COL_TRIANGLE_CHIN_MAX = 55
 
     def apply_weight_setting(self):
@@ -61,7 +63,7 @@ class TtfConfig():
 
         if self.STYLE in ["Black"]:
             # black style, for case:三, 131
-            self.ROW_TRIANGLE_HEIGHT_MIN = 30
+            self.ROW_TRIANGLE_HEIGHT_MIN = 28
             self.ROW_TRIANGLE_HEIGHT_MAX = 151
 
             # black style, for case:三, 186
@@ -78,16 +80,16 @@ class TtfConfig():
 
             # for rule#101
             # in regular=103 to 112, (case.10924 公, Black) 216
-            self.COL_STROKE_WIDTH_MIN = 63
-            self.COL_STROKE_WIDTH_MAX = 231
+            self.STROKE_WIDTH_MIN = 63
+            self.STROKE_WIDTH_MAX = 231
             
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 31
+            self.COL_TRIANGLE_CHIN_MIN = 25
             self.COL_TRIANGLE_CHIN_MAX = 85
 
         if self.STYLE in ["Bold"]:
             # in regular=80 to 57
-            self.ROW_TRIANGLE_HEIGHT_MIN = 30
+            self.ROW_TRIANGLE_HEIGHT_MIN = 28
             self.ROW_TRIANGLE_HEIGHT_MAX = 141
             # in regular=121 to 86
             self.ROW_TRIANGLE_SLIDE_MIN = 60
@@ -102,17 +104,17 @@ class TtfConfig():
 
             # for rule#101
             # in regular=103 to 112, (case.10924 公, Black) 216
-            self.COL_STROKE_WIDTH_MIN = 63
-            self.COL_STROKE_WIDTH_MAX = 208
+            self.STROKE_WIDTH_MIN = 58
+            self.STROKE_WIDTH_MAX = 208
 
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 31
+            self.COL_TRIANGLE_CHIN_MIN = 23
             self.COL_TRIANGLE_CHIN_MAX = 85
 
 
         if self.STYLE in ["SemiBold","Medium"]:
             # in regular=80 to 57
-            self.ROW_TRIANGLE_HEIGHT_MIN = 30
+            self.ROW_TRIANGLE_HEIGHT_MIN = 28
             self.ROW_TRIANGLE_HEIGHT_MAX = 130
             # in regular=121 to 86
             self.ROW_TRIANGLE_SLIDE_MIN = 53
@@ -127,16 +129,16 @@ class TtfConfig():
 
             # for rule#101
             # in regular=103 to 112
-            self.COL_STROKE_WIDTH_MIN = 63
-            self.COL_STROKE_WIDTH_MAX = 183
+            self.STROKE_WIDTH_MIN = 53
+            self.STROKE_WIDTH_MAX = 183
 
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 31
+            self.COL_TRIANGLE_CHIN_MIN = 20
             self.COL_TRIANGLE_CHIN_MAX = 75
 
         if self.STYLE in ["Light","ExtraLight"]:
             # in regular=80 to 57
-            self.ROW_TRIANGLE_HEIGHT_MIN = 28
+            self.ROW_TRIANGLE_HEIGHT_MIN = 24
             self.ROW_TRIANGLE_HEIGHT_MAX = 110
             # in regular=121 to 86
             self.ROW_TRIANGLE_SLIDE_MIN = 46
@@ -151,11 +153,11 @@ class TtfConfig():
 
             # for rule#101
             # in regular=103 to 112
-            self.COL_STROKE_WIDTH_MIN = 43
-            self.COL_STROKE_WIDTH_MAX = 133
+            self.STROKE_WIDTH_MIN = 38
+            self.STROKE_WIDTH_MAX = 133
 
             # in regular=45 to 42
-            self.COL_TRIANGLE_CHIN_MIN = 25
+            self.COL_TRIANGLE_CHIN_MIN = 17
             self.COL_TRIANGLE_CHIN_MAX = 55
 
     def __init__(self, weight_code):

@@ -28,8 +28,9 @@ class Rule(Rule.Rule):
         SLIDE_2_PERCENT_MAX = 1.69
 
         # default: 1.13 to 1.26,(.2639,真)1.36, (.26356, 片) 1.0, (.10924, 公) 0.80
+        # for case: (uni8F63,轣) 1.485
         SLIDE_3_PERCENT_MIN = 0.70
-        SLIDE_3_PERCENT_MAX = 1.47
+        SLIDE_3_PERCENT_MAX = 1.59
 
         # clone
         format_dict_array=[]
@@ -69,7 +70,7 @@ class Rule(Rule.Rule):
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[611,441]]
+                    debug_coordinate_list = [[124,777]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
@@ -226,7 +227,28 @@ class Rule(Rule.Rule):
                     is_match_pattern = False
                     # allow +0 vertical or horizontal
 
+                    # from horizon.
+                    is_pass_dot_0_check = False
                     if format_dict_array[(idx+0)%nodes_length]['y_equal_fuzzy']:
+                        is_pass_dot_0_check = True
+
+                    # for uni780C, 砌 的口。
+                    if not is_pass_dot_0_check:
+                        if format_dict_array[(idx+0)%nodes_length]['distance'] > 70:
+                            if format_dict_array[(idx+0)%nodes_length]['y'] > format_dict_array[(idx+1)%nodes_length]['y']:
+                                if format_dict_array[(idx+0)%nodes_length]['y'] - format_dict_array[(idx+1)%nodes_length]['y'] < 20:
+                                    is_pass_dot_0_check = True
+
+                    # for uni98EF,飯 的食的一。
+                    # 針對特定情況，放寬 y_equal_fuzzy, 放寬條件，也許會顯響到其他正常的筆畫。
+                    if not is_pass_dot_0_check:
+                        if format_dict_array[(idx+0)%nodes_length]['distance'] >= 102:
+                            if format_dict_array[(idx+4)%nodes_length]['distance'] >= 102:
+                                if abs(format_dict_array[(idx+0)%nodes_length]['y'] - format_dict_array[(idx+1)%nodes_length]['y']) <= 12:
+                                    if abs(format_dict_array[(idx+0)%nodes_length]['x'] - format_dict_array[(idx+1)%nodes_length]['x']) >= 102:
+                                        is_pass_dot_0_check = True
+
+                    if is_pass_dot_0_check:
                         if format_dict_array[(idx+1)%nodes_length]['y_direction'] > 0:
                             if format_dict_array[(idx+2)%nodes_length]['y_direction'] < 0:
                                 if format_dict_array[(idx+3)%nodes_length]['y_direction'] < 0:
@@ -261,8 +283,9 @@ class Rule(Rule.Rule):
     
                     # 增加新的 case: not horizontal line
                     RIGHT_ARM_LENGTH_MIN = 100
-                    RIGHT_ARM_VERTICAL_DIFF_MAX = 3
-                    RIGHT_ARM_HORIZONTAL_DIFF_MAX = 3
+                    # 允許的誤差值。
+                    RIGHT_ARM_VERTICAL_DIFF_MAX = 4
+                    RIGHT_ARM_HORIZONTAL_DIFF_MAX = 4
                     # for case:.12816 「嘠」.
                     # for case:.15996 尾。
                     if not is_match_pattern:
@@ -398,7 +421,7 @@ class Rule(Rule.Rule):
                     if is_more_one_dot:
                         del format_dict_array[(idx+2)%nodes_length]
                         if idx > (idx+2)%nodes_length:
-                            idx +=1
+                            idx -=1
                         nodes_length = len(format_dict_array)
 
                     X_EQUAL_ACCURACY=5
@@ -482,6 +505,8 @@ class Rule(Rule.Rule):
                             nodes_length = len(format_dict_array)
                             #print("del code:", format_dict_array[(idx+3)%nodes_length]['code'])
                             del format_dict_array[(idx+3)%nodes_length]
+                            if idx > (idx+3)%nodes_length:
+                                idx -= 1
 
                         if self.config.PROCESS_MODE == "MEATBALL":
                             self.apply_round(format_dict_array,idx)

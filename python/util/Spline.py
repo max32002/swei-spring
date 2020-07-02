@@ -257,7 +257,8 @@ class Spline():
 
         idx=-1
         redo_split=False   # Disable
-        redo_split=True    # Enable
+        #PS: must detect inside/outsdie stroke, before enable this filter!
+        #redo_split=True    # Enable
         while redo_split:
             idx+=1
             redo_split=self.split_spline(stroke_dict, unicode_int)
@@ -384,7 +385,11 @@ class Spline():
             pass
 
         skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#101!")
             redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
@@ -403,7 +408,11 @@ class Spline():
             pass
             
         skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#102!")
             redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru102.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
@@ -419,8 +428,13 @@ class Spline():
         if DISABLE_ALL_RULE:
             redo_travel=False
             pass
+        skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
-            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru103.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#103!")
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru103.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
         ru103 = None
@@ -436,8 +450,13 @@ class Spline():
         if DISABLE_ALL_RULE:
             redo_travel=False
             pass
+        skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
-            redo_travel,idx, inside_stroke_dict,skip_coordinate=ru104.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate)
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#104!")
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru104.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
         ru104 = None
@@ -453,7 +472,11 @@ class Spline():
             redo_travel=False
             pass
         skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#105!")
             redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru105.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
@@ -470,7 +493,11 @@ class Spline():
             redo_travel=False
             pass
         skip_coordinate_rule = []
+        redo_count=0
         while redo_travel:
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#106!")
             redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru106.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
             if redo_travel:
                 is_modified = True
@@ -489,7 +516,11 @@ class Spline():
                 pass
 
             skip_coordinate_rule = []
+            redo_count=0
             while redo_travel:
+                redo_count+=1
+                if redo_count==100:
+                    print("occure bug at rule#101!")
                 redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru101.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
                 if redo_travel:
                     is_modified = True

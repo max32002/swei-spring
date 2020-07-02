@@ -9,6 +9,8 @@ from . import Rule
 # PS: 因為 array size change, so need redo.
 # PS: 這個已知，會造成錯誤，當新切出來的區塊為clockwise, 
 #      解法：需要先判斷新的二點之間，為 in stroke.
+# PS: must detect inside/outsdie stroke, before enable this filter!
+#   : ex: uni971C 霜（black style)
 class Rule(Rule.Rule):
     def __init__(self):
         pass
