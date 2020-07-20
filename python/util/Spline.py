@@ -369,6 +369,11 @@ class Spline():
         ru106.assign_config(self.config)
         ru106.assign_unicode(unicode_int)
 
+        from . import Rule107_Eight
+        ru107=Rule107_Eight.Rule()
+        ru107.assign_config(self.config)
+        ru107.assign_unicode(unicode_int)
+
         # start process here.
         spline_dict = stroke_dict[key]
 
@@ -502,6 +507,27 @@ class Spline():
             if redo_travel:
                 is_modified = True
         ru106 = None
+
+        # start to travel nodes for [RULE #107]
+        # 二個筆畫，產生出來在直線的三角形
+        if DEBUG_CRASH_RULE:
+            print("start Rule # 107...")
+        idx=-1
+        redo_travel=False   # Disable
+        redo_travel=True    # Enable
+        if DISABLE_ALL_RULE:
+            redo_travel=False
+            pass
+        skip_coordinate_rule = []
+        redo_count=0
+        while redo_travel:
+            redo_count+=1
+            if redo_count==100:
+                print("occure bug at rule#107!")
+            redo_travel,idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule=ru107.apply(spline_dict, idx, inside_stroke_dict,skip_coordinate,skip_coordinate_rule)
+            if redo_travel:
+                is_modified = True
+        ru107 = None
 
         # start to travel nodes for [RULE #101]
         # PS: 105+106, 改變外形後，會讓 101 重新 match.

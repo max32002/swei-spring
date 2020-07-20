@@ -2,7 +2,7 @@
 #encoding=utf-8
 
 class TtfConfig():
-    VERSION = "1.046"
+    VERSION = "1.047"
     PROCESS_MODE = "SPRING"
     #PROCESS_MODE = "MEATBALL"
 
@@ -35,7 +35,8 @@ class TtfConfig():
     
     # in regular=121 to 86
     # for uni5A64「婤」, value:63, 因為被截斷
-    ROW_TRIANGLE_SLIDE_MIN = 51
+    # for uni8061,聡: 48
+    ROW_TRIANGLE_SLIDE_MIN = 44
     # for case:uni4E00 一：154
     ROW_TRIANGLE_SLIDE_MAX = 165
 
@@ -67,7 +68,7 @@ class TtfConfig():
             self.ROW_TRIANGLE_HEIGHT_MAX = 151
 
             # black style, for case:三, 186
-            self.ROW_TRIANGLE_SLIDE_MIN = 63
+            self.ROW_TRIANGLE_SLIDE_MIN = 54
             self.ROW_TRIANGLE_SLIDE_MAX = 200
 
             # black style, for case:三, 34, (case.10924 公, Black) 104
@@ -92,7 +93,7 @@ class TtfConfig():
             self.ROW_TRIANGLE_HEIGHT_MIN = 28
             self.ROW_TRIANGLE_HEIGHT_MAX = 141
             # in regular=121 to 86
-            self.ROW_TRIANGLE_SLIDE_MIN = 60
+            self.ROW_TRIANGLE_SLIDE_MIN = 52
             self.ROW_TRIANGLE_SLIDE_MAX = 190
             # in regular=29,31 to (.26356, 片)47
             self.ROW_TRIANGLE_CHIN_MIN = 21
@@ -117,7 +118,7 @@ class TtfConfig():
             self.ROW_TRIANGLE_HEIGHT_MIN = 28
             self.ROW_TRIANGLE_HEIGHT_MAX = 130
             # in regular=121 to 86
-            self.ROW_TRIANGLE_SLIDE_MIN = 53
+            self.ROW_TRIANGLE_SLIDE_MIN = 46
             self.ROW_TRIANGLE_SLIDE_MAX = 180
             # in regular=29,31 to (.26356, 片)47
             self.ROW_TRIANGLE_CHIN_MIN = 21
@@ -141,7 +142,7 @@ class TtfConfig():
             self.ROW_TRIANGLE_HEIGHT_MIN = 24
             self.ROW_TRIANGLE_HEIGHT_MAX = 110
             # in regular=121 to 86
-            self.ROW_TRIANGLE_SLIDE_MIN = 46
+            self.ROW_TRIANGLE_SLIDE_MIN = 39
             self.ROW_TRIANGLE_SLIDE_MAX = 160
             # in regular=29,31 to (.26356, 片)47
             self.ROW_TRIANGLE_CHIN_MIN = 18

@@ -70,13 +70,13 @@ class Rule(Rule.Rule):
                 #is_debug_mode = True
 
                 if is_debug_mode:
-                    debug_coordinate_list = [[124,777]]
+                    debug_coordinate_list = [[667,568]]
                     if not([format_dict_array[idx]['x'],format_dict_array[idx]['y']] in debug_coordinate_list):
                         continue
 
                     print("="*30)
                     print("index:", idx)
-                    for debug_idx in range(8):
+                    for debug_idx in range(9):
                         print(debug_idx-2,": val#101:",format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['code'],'-(',format_dict_array[(idx+debug_idx+nodes_length-2)%nodes_length]['distance'],')')
 
                 # begin travel.
@@ -100,6 +100,9 @@ class Rule(Rule.Rule):
                 # for case: 攖 uni6516
                 is_more_one_dot = False
 
+                # for case: 瓱 uni74F1
+                is_more_one_dot_with_slash = False
+
                 # match ?ll?c
                 if is_match_pattern:
                     fail_code = 100
@@ -112,6 +115,15 @@ class Rule(Rule.Rule):
                             if format_dict_array[(idx+4)%nodes_length]['t'] == 'c':
                                 is_match_pattern = True
 
+                                # for case: 瓱 uni74F1
+                                if format_dict_array[(idx+3)%nodes_length]['distance'] <= 35:
+                                    if format_dict_array[(idx+4)%nodes_length]['distance'] <= 35:
+                                        if format_dict_array[(idx+3)%nodes_length]['distance'] + format_dict_array[(idx+4)%nodes_length]['distance'] >= self.config.ROW_TRIANGLE_CHIN_MIN:
+                                            if format_dict_array[(idx+3)%nodes_length]['distance'] + format_dict_array[(idx+4)%nodes_length]['distance'] <= self.config.ROW_TRIANGLE_CHIN_MAX:
+                                                if format_dict_array[(idx+3)%nodes_length]['x_direction'] == format_dict_array[(idx+4)%nodes_length]['x_direction']:
+                                                    if format_dict_array[(idx+3)%nodes_length]['y_direction'] == format_dict_array[(idx+4)%nodes_length]['y_direction']:
+                                                        is_more_one_dot_with_slash = True
+
                             if format_dict_array[(idx+4)%nodes_length]['t'] == 'l':
                                 is_match_pattern = True
                                 is_flat_chin = True
@@ -123,6 +135,7 @@ class Rule(Rule.Rule):
                 if is_debug_mode:
                     print("is_flat_chin:", is_flat_chin)
                     print("is_more_one_dot:", is_more_one_dot)
+                    print("is_more_one_dot_with_slash:",is_more_one_dot_with_slash)
 
                 if is_match_pattern:
                     fail_code = 200
@@ -143,6 +156,11 @@ class Rule(Rule.Rule):
                                             fail_code = 211
                                             if format_dict_array[(idx+3)%nodes_length]['distance'] <= self.config.ROW_TRIANGLE_CHIN_MAX:
                                                 is_match_pattern = True
+
+                                        if not is_match_pattern:
+                                            if is_more_one_dot_with_slash:
+                                                is_match_pattern = True
+
                                     else:
                                         fail_code = 220
                                         # flat chin
@@ -291,9 +309,19 @@ class Rule(Rule.Rule):
                     if not is_match_pattern:
                         fail_code = 440
 
-                        new_x2, new_y2 = spline_util.two_point_extend(format_dict_array[(idx+4)%nodes_length]['x'],format_dict_array[(idx+4)%nodes_length]['y'],format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'],-1 * format_dict_array[(idx+0)%nodes_length]['distance'])
-                        next_line_distance = spline_util.get_distance(new_x2, new_y2,format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'])
-                        left_height = abs(format_dict_array[(idx+0)%nodes_length]['y']-format_dict_array[(idx+5)%nodes_length]['y'])
+                        # 產生一個平行四邊形.
+                        new_x2, new_y2 = 0,0
+                        next_line_distance = 0
+                        if not is_more_one_dot_with_slash:
+                            # normal 尾
+                            new_x2, new_y2 = spline_util.two_point_extend(format_dict_array[(idx+4)%nodes_length]['x'],format_dict_array[(idx+4)%nodes_length]['y'],format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'],-1 * format_dict_array[(idx+0)%nodes_length]['distance'])
+                            next_line_distance = spline_util.get_distance(new_x2, new_y2,format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'])
+                            left_height = abs(format_dict_array[(idx+0)%nodes_length]['y']-format_dict_array[(idx+5)%nodes_length]['y'])
+                        else:
+                            # 多一點的瓱
+                            new_x2, new_y2 = spline_util.two_point_extend(format_dict_array[(idx+5)%nodes_length]['x'],format_dict_array[(idx+5)%nodes_length]['y'],format_dict_array[(idx+6)%nodes_length]['x'],format_dict_array[(idx+6)%nodes_length]['y'],-1 * format_dict_array[(idx+0)%nodes_length]['distance'])
+                            next_line_distance = spline_util.get_distance(new_x2, new_y2,format_dict_array[(idx+6)%nodes_length]['x'],format_dict_array[(idx+6)%nodes_length]['y'])
+                            left_height = abs(format_dict_array[(idx+0)%nodes_length]['y']-format_dict_array[(idx+6)%nodes_length]['y'])
                         right_height = abs(format_dict_array[(idx+1)%nodes_length]['y']-new_y2)
                         height_diff = abs(left_height - right_height)
                         width_diff = abs(format_dict_array[(idx+0)%nodes_length]['distance'] - next_line_distance)
