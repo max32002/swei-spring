@@ -5,6 +5,7 @@
 和思源宋體一樣，支援7種的字重：
 ![字重比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_style.png)
 
+
 相比於思源宋體，獅尾四季春的造型更加簡明現代，版面效果清新輕快，缺點也是比較輕，橫筆明顯極細。
 
 「花園明朝」、「思源宋體」、「獅尾四季春」、「源雲明體」的比較：
@@ -15,6 +16,12 @@
 * 在「草」部的筆畫，獅尾是分開的二個部份。
 * 字體裡的「草字頭部首」中間該不該連起來，「肉字旁部首」該不該變成「月」，要不要把手寫習慣代入印刷字體？整體看來，會不會影響視覺的延伸性？會不會影響印刷的可行性與閱讀的便利性？這個答案我也不清楚，如果你是台灣教育部標準字符的愛好者，獅尾字體應該是一個不錯的選擇。
 
+
+「CJK TC」和「CJK SC」的比較：
+![TC和SC比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_tc_sc.png)
+* 在「肉」、「糸」、「女」、「辶」、「食」的筆畫不同，CJK SC 「肉字旁部首」變成「月」。 
+* 在「草」部的筆畫，CJK SC 中間連起來。
+* 雨,戶,舟,北字寫法不同。
 
 免費贈送有「加糖」(Swei Spring Sugar)的版本，針對橫筆太細做加粗。
 ![字體比較](https://github.com/max32002/swei-spring/raw/master/preview/sugar_styles.png)
