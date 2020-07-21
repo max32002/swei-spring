@@ -21,7 +21,7 @@
 ![TC和SC比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_tc_sc.png)
 * 在「肉」、「糸」、「女」、「辶」、「食」的筆畫不同，CJK SC 「肉字旁部首」變成「月」。 
 * 在「草」部的筆畫，CJK SC 中間連起來。
-* 雨,戶,舟,北字寫法不同。
+* 雨、身、戶、舟、北、㕣、酋字寫法不同。
 
 免費贈送有「加糖」(Swei Spring Sugar)的版本，針對橫筆太細做加粗。
 ![字體比較](https://github.com/max32002/swei-spring/raw/master/preview/sugar_styles.png)
