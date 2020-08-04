@@ -41,6 +41,20 @@
 
 請點選GitHub此畫面右上綠色「Clone or download」按鈕，並選擇「Download ZIP」，或點進想下載的ttf字型檔案，再點「Download」的按鈕進行下載。
 
+## 使用 WebFont
+
+網路字型(Web Font)，用於網頁上的字型顯示，使用者的用戶端不需預先安裝字型檔，一樣能夠看到特殊的字型效果。實現該功能的原理是在瀏覽時才下載字型檔。
+
+可以服用下面的css:
+```
+@font-face {
+  font-family: SweiSpringCJKtc-Regular;
+  src: url(https://github.com/max32002/swei-spring/raw/master/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2")
+  , url(https://github.com/max32002/swei-spring/raw/master/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+}
+```
+您也可以透過從CDN引入在GitHub上woff2檔案的網址，再把上方的url()內容置換成CDN快取後的網址，將可大幅加快網頁載入。推薦使用 jsDelivr 的服務，在速度上挺不錯的，參考看看： www.cdnperf.com/#!performance,Asia 。
+
 ## 附註
 
 * 筆畫太複雜或重疊的，因為拆筆畫有點難，目前是先跳過，所以這不是一個完整、健康和專業的字體。
