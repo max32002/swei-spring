@@ -57,8 +57,8 @@
 ```
 @font-face {
   font-family: SweiSpringCJKtc-Regular;
-  src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.061/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2")
-  , url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.061/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+  src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.065/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2")
+  , url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.065/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
 }
 ```
 
