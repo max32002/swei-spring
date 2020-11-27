@@ -1,3 +1,7 @@
+# 2020/10/12 ver 1.065
+* 修正方向性的錯誤，造成四季春加糖Medium的粗細錯誤問題。
+(fix wrong direction bug for swei-spring-regular.ttf and swei-spring-sugar-medium.ttf.)
+
 # 2020/10/12 ver 1.061
 * 支援直排、直書。
 
