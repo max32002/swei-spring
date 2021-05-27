@@ -1,3 +1,6 @@
+# 2021/05/28 ver 1.067
+* 修正字體的名稱在英文系統環境下顯示錯誤，增加 prefer font family 的設定值
+
 # 2020/10/12 ver 1.065
 * 修正方向性的錯誤，造成四季春加糖Medium的粗細錯誤問題。
 (fix wrong direction bug for swei-spring-regular.ttf and swei-spring-sugar-medium.ttf.)
