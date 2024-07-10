@@ -3,7 +3,7 @@
 獅尾四季春字體基於[思源宋體](https://github.com/adobe-fonts/source-han-serif)的拔三角形改造，更加簡明現代化的字體。支援简体中文、繁體中文、韓文與日文；
 
 和思源宋體一樣，支援7種的字重：
-![字重比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_style.png)
+![字重比較](https://github.com/max32002/swei-spring/raw/main/preview/compare_style.png)
 
 
 ## 與其他字體的比較
@@ -11,7 +11,7 @@
 
 「花園明朝」、「思源宋體」、「獅尾四季春」、「源雲明體」的比較：
 
-![字體比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_noto_serif.png)
+![字體比較](https://github.com/max32002/swei-spring/raw/main/preview/compare_noto_serif.png)
 
 * 在「肉」、「糸」、「女」、「辶」、「食」的筆畫，獅尾比較相似台灣教育部推薦字體筆順，適合教育用途。
 * 在「草」部的筆畫，獅尾是分開的二個部份。
@@ -25,7 +25,7 @@
 * 相同一個字，在不地區的書寫方式可能會略有不同。
 
 ### 「CJK TC」和「CJK SC」的比較：
-![TC和SC比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_tc_sc.png)
+![TC和SC比較](https://github.com/max32002/swei-spring/raw/main/preview/compare_tc_sc.png)
 * 在「肉」、「糸」、「女」、「辶」、「食」的筆畫不同，CJK SC 「肉字旁部首」變成「月」。 
 * 在「草」部的筆畫，CJK SC 中間連起來。
 * 「體」字的骨上方方向相反。
@@ -33,17 +33,17 @@
 * 雨、身、戶、舟、北、㕣、酋字寫法不同。
 
 ### 「CJK TC」和「CJK JP」的比較：
-![TC和SC比較](https://github.com/max32002/swei-spring/raw/master/preview/compare_tc_jp.png)
+![TC和SC比較](https://github.com/max32002/swei-spring/raw/main/preview/compare_tc_jp.png)
 * 在「肉」、「糸」、「女」、「辶」、「食」的筆畫不同，CJK JP 「肉字旁部首」變成「月」。 
 * 在「草」部的筆畫，CJK JP 中間連起來。
 * 雨、言、青、兌、賣、直、真、曾、戶、北、㕣、酋字寫法不同。其他[常見與日系字型的差異](https://max-everyday.com/2020/06/taiwanpearl/#diff)。
 
 
 免費贈送有「加糖」(Swei Spring Sugar)的版本，針對橫筆太細做加粗。
-![字體比較](https://github.com/max32002/swei-spring/raw/master/preview/sugar_styles.png)
+![字體比較](https://github.com/max32002/swei-spring/raw/main/preview/sugar_styles.png)
 
 ## 更新日誌
-[點擊此處](https://github.com/max32002/swei-spring/blob/master/change_log.md) 查看更新記錄。
+[點擊此處](https://github.com/max32002/swei-spring/blob/main/change_log.md) 查看更新記錄。
 
 ## 下載字型
 
@@ -57,8 +57,8 @@
 ```
 @font-face {
   font-family: SweiSpringCJKtc-Regular;
-  src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.065/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2")
-  , url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.065/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
+  src: url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff2) format("woff2")
+  , url(https://cdn.jsdelivr.net/gh/max32002/swei-spring@1.068/WebFont/CJK%20TC/SweiSpringCJKtc-Regular.woff) format("woff");
 }
 ```
 
